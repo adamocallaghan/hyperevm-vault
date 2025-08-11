@@ -6,6 +6,8 @@
 # - do this by logging into HyperCore testnet
 # - and getting 1000 USDC from the faucet: https://app.hyperliquid-testnet.xyz/drip
 #
+# Get some HYPE for gas on HyperEVM: https://www.gas.zip/faucet/hyperevm
+#
 # Switch your deployer account to 'Big Blocks': https://hyperevm-block-toggle.vercel.app/
 # - if you haven't activated your address/account switching to Big Blocks will fail
 #
