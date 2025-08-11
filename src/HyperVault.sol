@@ -32,18 +32,22 @@ contract HyperVault is ERC4626 {
         // bridge USDC to HyperCore Spot
         CoreWriterLib.bridgeToCore(address(asset), assets);
 
-        // get USDC tokenId from address
-        uint64 tokenId = PrecompileLib.getTokenIndex(address(asset));
+        // // get USDC tokenId from address
+        // uint64 tokenId = PrecompileLib.getTokenIndex(address(asset));
 
-        // calculate coreAmount from evmAmount
-        uint64 coreAmount = HLConversions.convertEvmToCoreAmount(tokenId, assets);
+        // // calculate coreAmount from evmAmount
+        // uint64 coreAmount = HLConversions.convertEvmToCoreAmount(tokenId, assets);
 
-        // transfer USDC from Spot to Perps
-        uint64 usdcPerpAmount = HLConversions.convertUSDC_CoreToPerp(coreAmount);
-        CoreWriterLib.transferUsdClass(usdcPerpAmount, true);
+        // // transfer USDC from Spot to Perps
+        // uint64 usdcPerpAmount = HLConversions.convertUSDC_CoreToPerp(coreAmount);
+        // CoreWriterLib.transferUsdClass(usdcPerpAmount, true);
 
-        // transfer to the HLP vault
-        CoreWriterLib.vaultTransfer(vault, true, uint64(assets));
+        // // transfer to the HLP vault
+        // CoreWriterLib.vaultTransfer(vault, true, uint64(assets));
+    }
+
+    function getTokenIndex(address _tokenAddress) public view returns(uint64) {
+        return PrecompileLib.getSpotIndex(_tokenAddress);
     }
 
     /*//////////////////////////////////////////////////////////////
