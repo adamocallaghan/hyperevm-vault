@@ -9,7 +9,7 @@ import {PrecompileLib} from "@hyper-evm-lib/src/PrecompileLib.sol";
  * @title VaultExample
  * @dev This contract demonstrates CoreWriterLib vault functionality.
  */
-contract VaultExample {
+contract VaultExample is ERC4626 {
     using CoreWriterLib for *;
 
     uint64 public constant USDC_TOKEN_ID = 0;

@@ -1,1 +1,2 @@
 @hyper-evm-lib=lib/hyper-evm-lib
+solmate/=lib/solmate/src/
