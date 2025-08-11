@@ -29,6 +29,20 @@ contract HyperVault is ERC4626 {
     }
 
     function afterDeposit(uint256 assets, uint256 shares) internal override {
+        // bridge USDC to HyperCore Spot
+        CoreWriterLib.bridgeToCore(address(asset), assets);
+
+        // get USDC tokenId from address
+        uint64 tokenId = PrecompileLib.getTokenIndex(address(asset));
+
+        // calculate coreAmount from evmAmount
+        uint64 coreAmount = HLConversions.convertEvmToCoreAmount(tokenId, assets);
+
+        // transfer USDC from Spot to Perps
+        uint64 usdcPerpAmount = HLConversions.convertUSDC_CoreToPerp(coreAmount);
+        CoreWriterLib.transferUsdClass(usdcPerpAmount, true);
+
+        // transfer to the HLP vault
         CoreWriterLib.vaultTransfer(vault, true, uint64(assets));
     }
 

@@ -8,8 +8,8 @@ import {ERC20} from "solmate/tokens/ERC20.sol";
 contract DeployHyperVault is Script {
     function run() external {
 
-        address HLP_VAULT = address(0xa15099a30BBf2e68942d6F4c43d70D04FAEab0A0);
-        ERC20 usdc_testnet = ERC20(0xd9CBEC81df392A88AEff575E962d149d57F4d6bc);
+        address HLP_VAULT = address(0xa15099a30BBf2e68942d6F4c43d70D04FAEab0A0); // HyperCore HLP Vault Address
+        ERC20 usdc_testnet = ERC20(0xd9CBEC81df392A88AEff575E962d149d57F4d6bc); // HyperEVM Testnet USDC Address
         
         vm.createSelectFork("hyperevm");
 

@@ -33,3 +33,17 @@ transfer-to-contract:
 	cast send $(USDC_HYPEREVM) "transfer(address,uint256)" $(HYPERVAULT) 1e8 --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
 
 # Now Check the HyperVault balance above again! (totalAssets should be == $1 USDC now)
+
+# 5) Approve + Deposit some USDC into the HyperVault
+approve-usdc-to-hypervault:
+	cast send $(USDC_HYPEREVM) "approve(address,uint256)(bool)" $(HYPERVAULT) 1e18 --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
+
+deposit-usdc-to-hypervault:
+	cast send $(HYPERVAULT) "deposit(uint256,address)(bool)" 1e8 $(DEPLOYER_PUBLIC_ADDRESS) --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
+
+
+
+
+# Deploy Token Registry to HyperEVM Testnet
+deploy-token-registry-contract:
+	forge script script/DeployTokenRegistry.s.sol:DeployTokenRegistry --broadcast --legacy --account deployer -vvvvv
