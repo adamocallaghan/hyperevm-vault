@@ -42,12 +42,19 @@ deposit-usdc-to-hypervault:
 	cast send $(HYPERVAULT) "deposit(uint256,address)(bool)" 1e8 $(DEPLOYER_PUBLIC_ADDRESS) --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
 
 
-# Get Token Index
-get-token-index:
+# Get Token Index - TESTNET
+get-token-index-via-hypervault:
 	cast call $(HYPERVAULT) "getTokenIndex(address)(uint64)" $(USDC_HYPEREVM) --rpc-url $(HYPEREVM_TESTNET_RPC)
+
+get-token-index-via-registry:
+	cast call $(TOKEN_REGISTRY_TESTNET) "getTokenIndex(address)(uint32)" $(USDC_HYPEREVM) --rpc-url $(HYPEREVM_TESTNET_RPC)
 
 get-purr-index:
 	cast call $(HYPERVAULT) "getTokenIndex(address)(uint64)" 0xa9056c15938f9aff34cd497c722ce33db0c2fd57 --rpc-url $(HYPEREVM_TESTNET_RPC)
+
+# Get Token Index - MAINNET - WORKING FINE
+get-token-index-mainnet:
+	cast call $(TOKEN_REGISTRY_MAINNET) "getTokenIndex(address)(uint32)" 0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb --rpc-url $(HYPEREVM_MAINNET_RPC)
 
 # Deploy Token Registry to HyperEVM Testnet
 deploy-token-registry-contract:
