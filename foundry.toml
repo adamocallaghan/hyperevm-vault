@@ -9,8 +9,8 @@ remappings = [
 ]
 
 [rpc_endpoints]
-hyperevm = "${HYPEREVM_TESTNET_RPC}"
-hyperevm-mainnet = "${HYPEREVM_MAINNET_RPC}"
+testnet = "${HYPEREVM_TESTNET_RPC}"
+mainnet = "${HYPEREVM_MAINNET_RPC}"
 
 [etherscan]
 hyperevm = { key = "${HYPEREVM_ETHERSCAN_API_KEY}" }

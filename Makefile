@@ -21,7 +21,7 @@
 
 # 1) Deploy the HyperVault Contract to HyperEVM
 deploy-hypervault-contract:
-	forge script script/DeployHyperVault.s.sol:DeployHyperVault --broadcast --legacy --account deployer -vvvvv
+	NETWORK=testnet forge script script/DeployHyperVault.s.sol:DeployHyperVault --broadcast --legacy --account deployer -vvvvv
 
 # POST-DEPLOYMENT NOTE: make sure to transfer $1 USDC Spot from your own account to the Hypervault address on HyperCore, this will activate the Hypervault *Contract Address* on HyperCore so you can use CoreWriter
 
@@ -90,11 +90,6 @@ get-all-balances:
 
 
 
-
-
-
-
-
 # Get Token Index
 get-token-index-mainnet:
 	cast call $(TOKEN_REGISTRY_MAINNET) "getTokenIndex(address)(uint32)" $(USDT_MAINNET) --rpc-url $(HYPEREVM_MAINNET_RPC)
@@ -108,3 +103,10 @@ curl-get-hypervault-balance-on-core:
 
 curl-get-user-balance-on-core:
 	curl -X POST https://api.hyperliquid.xyz/info -H "Content-Type: application/json" -d '{"type": "spotClearinghouseState","user": "$(DEPLOYER_PUBLIC_ADDRESS)"}'
+
+# TESTNET TOKEN REGISTRY COMMANDS...
+set-token-testnet:
+	cast send $(TOKEN_REGISTRY_TESTNET) "setTokenInfo(uint32)" 1129 --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
+
+get-usdc-token-index-testnet:
+	cast call $(TOKEN_REGISTRY_TESTNET) "getTokenIndex(address)(uint32)" $(USDC_TESTNET) --rpc-url $(HYPEREVM_TESTNET_RPC)

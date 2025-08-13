@@ -43,9 +43,18 @@ contract HyperVault is ERC4626 {
         // calculate coreAmount from evmAmount
         uint64 coreAmount = HLConversions.convertEvmToCoreAmount(tokenId, assets);
 
-        CoreWriterLib.spotSend(msg.sender, tokenId, coreAmount); // transfer to the user on Core Spot
+        // CoreWriterLib.spotSend(msg.sender, tokenId, coreAmount); // transfer to the user on Core Spot
+
+        uint32 spotPairAsset = 10166;
+        bool isBuy = false; // buy 'base' token = true; buy 'quote' token = false; we are buying USDC, the quote token
+        uint64 limitPx = 0;
+        // uint64 sz;
+        bool reduceOnly = false;
+        uint8 encodedTif = 3; // 3 = IOC, should act as a market order
+        uint128 cloid = 0; // No CLOID for demo
 
         // swap USDT to USDC (Spot)
+        CoreWriterLib.placeLimitOrder(spotPairAsset, isBuy, limitPx, coreAmount, reduceOnly, encodedTif, cloid);
 
         // // transfer USDC from Spot to Perps
         // uint64 usdcPerpAmount = HLConversions.convertUSDC_CoreToPerp(coreAmount);
