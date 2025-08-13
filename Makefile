@@ -70,3 +70,7 @@ get-hypervault-usdt-balance:
 # Deploy Token Registry to HyperEVM Testnet
 deploy-token-registry-contract:
 	forge script script/DeployTokenRegistry.s.sol:DeployTokenRegistry --broadcast --legacy --account deployer -vvvvv
+
+# cURL to get HyperVault balance on Core
+curl-get-hypervault-balance-on-core:
+	curl -X POST https://api.hyperliquid.xyz/info -H "Content-Type: application/json" -d '{"type": "spotClearinghouseState","user": "0x7490fc19fdf1063ECb07d1980D1a960b9b57b63a"}'
