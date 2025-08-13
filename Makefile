@@ -45,21 +45,6 @@ deposit-usdt-to-hypervault:
 withdraw-usdt-from-hypervault-on-core:
 	cast send $(HYPERVAULT) "withdraw(uint256,address,address)(uint256)" 1e4 $(DEPLOYER_PUBLIC_ADDRESS) $(DEPLOYER_PUBLIC_ADDRESS) --account deployer --rpc-url $(HYPEREVM_MAINNET_RPC)
 
-
-# Set Token Info - MAINNET
-set-token-info: # PURR token
-	cast send $(TOKEN_REGISTRY_TESTNET) "setTokenInfo(uint32)" 0  --account deployer --rpc-url $(HYPEREVM_MAINNET_RPC)
-
-# Get Token Index - MAINNET
-get-token-index-via-hypervault:
-	cast call $(HYPERVAULT) "getTokenIndex(address)(uint64)" $(USDC_HYPEREVM) --rpc-url $(HYPEREVM_TESTNET_RPC)
-
-get-token-index-via-registry:
-	cast call $(TOKEN_REGISTRY_MAINNET) "getTokenIndex(address)(uint32)" $(USDT_MAINNET) --rpc-url $(HYPEREVM_MAINNET_RPC)
-
-get-purr-index:
-	cast call $(HYPERVAULT) "getTokenIndex(address)(uint64)" 0xa9056c15938f9aff34cd497c722ce33db0c2fd57 --rpc-url $(HYPEREVM_MAINNET_RPC)
-
 # Get Token Index - MAINNET - WORKING FINE
 get-token-index-mainnet:
 	cast call $(TOKEN_REGISTRY_MAINNET) "getTokenIndex(address)(uint32)" $(USDT_MAINNET) --rpc-url $(HYPEREVM_MAINNET_RPC)
@@ -67,13 +52,30 @@ get-token-index-mainnet:
 get-hypervault-usdt-balance:
 	cast call $(USDT_MAINNET) "balanceOf(address)(uint256)" $(HYPERVAULT) --rpc-url $(HYPEREVM_MAINNET_RPC)
 
-# Deploy Token Registry to HyperEVM Testnet
-deploy-token-registry-contract:
-	forge script script/DeployTokenRegistry.s.sol:DeployTokenRegistry --broadcast --legacy --account deployer -vvvvv
-
 # cURL to get HyperVault balance on Core
 curl-get-hypervault-balance-on-core:
 	curl -X POST https://api.hyperliquid.xyz/info -H "Content-Type: application/json" -d '{"type": "spotClearinghouseState","user": "$(HYPERVAULT)"}'
 
 curl-get-user-balance-on-core:
 	curl -X POST https://api.hyperliquid.xyz/info -H "Content-Type: application/json" -d '{"type": "spotClearinghouseState","user": "$(DEPLOYER_PUBLIC_ADDRESS)"}'
+
+
+# GET ALL BALANCES
+get-all-balances:
+	@echo "Fetching HyperEVM Balances..."
+	@total_assets=$$(cast call $(HYPERVAULT) "totalAssets()(uint256)" --rpc-url $(HYPEREVM_MAINNET_RPC)); \
+	my_usdt=$$(cast call $(USDT_MAINNET) "balanceOf(address)(uint256)" $(DEPLOYER_PUBLIC_ADDRESS) --rpc-url $(HYPEREVM_MAINNET_RPC)); \
+	hypervault_usdt=$$(cast call $(USDT_MAINNET) "balanceOf(address)(uint256)" $(HYPERVAULT) --rpc-url $(HYPEREVM_MAINNET_RPC)); \
+	echo "On-chain Total Assets: $$total_assets"; \
+	echo "My USDT Balance: $$my_usdt"; \
+	echo "HyperVault USDT Balance: $$hypervault_usdt"; \
+	\
+	echo ""; \
+	echo "Fetching HyperVault balances from HyperLiquid Core..."; \
+	hv_core=$$(curl -s -X POST https://api.hyperliquid.xyz/info -H "Content-Type: application/json" -d '{"type": "spotClearinghouseState","user": "$(HYPERVAULT)"}'); \
+	echo "$$hv_core" | jq -r '.balances[] | "\(.coin): \(.total)"'; \
+	\
+	echo ""; \
+	echo "Fetching Your User/Deployer balances from HyperLiquid Core..."; \
+	user_core=$$(curl -s -X POST https://api.hyperliquid.xyz/info -H "Content-Type: application/json" -d '{"type": "spotClearinghouseState","user": "$(DEPLOYER_PUBLIC_ADDRESS)"}'); \
+	echo "$$user_core" | jq -r '.balances[] | "\(.coin): \(.total)"'
