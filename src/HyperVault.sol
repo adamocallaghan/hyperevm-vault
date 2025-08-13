@@ -45,6 +45,8 @@ contract HyperVault is ERC4626 {
 
         CoreWriterLib.spotSend(msg.sender, tokenId, coreAmount); // transfer to the user on Core Spot
 
+        // swap USDT to USDC (Spot)
+
         // // transfer USDC from Spot to Perps
         // uint64 usdcPerpAmount = HLConversions.convertUSDC_CoreToPerp(coreAmount);
         // CoreWriterLib.transferUsdClass(usdcPerpAmount, true);
