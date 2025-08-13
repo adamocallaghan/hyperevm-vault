@@ -19,28 +19,36 @@ deploy-hypervault-contract:
 
 # 2) Check the totalAssets in the HyperVault (should be 0 initially)
 get-total-assets:
-	cast call $(HYPERVAULT) "totalAssets()(uint256)" --rpc-url $(HYPEREVM_TESTNET_RPC)
+	cast call $(HYPERVAULT) "totalAssets()(uint256)" --rpc-url $(HYPEREVM_MAINNET_RPC)
 
-# 3) Using the Testnet GUI: https://app.hyperliquid-testnet.xyz/portfolio
+# 3) Using the Mainnet GUI: https://app.hyperliquid.xyz/portfolio
 # 3.1) Transfer some USDC from HyperCore Perps => HyperCore Spot
 # 3.2) Then transfer the USDC from HyperCore Spot => HyperEVM
 # 3.3) You should now get your USDC balance on HyperEVM using this call...
-get-my-usdc-balance:
-	cast call $(USDC_HYPEREVM) "balanceOf(address)(uint256)" $(DEPLOYER_PUBLIC_ADDRESS) --rpc-url $(HYPEREVM_TESTNET_RPC)
+get-my-usdt-balance:
+	cast call $(USDT_MAINNET) "balanceOf(address)(uint256)" $(DEPLOYER_PUBLIC_ADDRESS) --rpc-url $(HYPEREVM_MAINNET_RPC)
 
-# 4) Transfer 1e8 (i.e. $1 USDC) to your HyperVault
+# 4) Transfer 1e4 (i.e. $0.01 USDC) to your HyperVault
 transfer-to-contract:
-	cast send $(USDC_HYPEREVM) "transfer(address,uint256)" $(HYPERVAULT) 1e8 --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
+	cast send $(USDT_MAINNET) "transfer(address,uint256)" $(HYPERVAULT) 1e4 --account deployer --rpc-url $(HYPEREVM_MAINNET_RPC)
 
 # Now Check the HyperVault balance above again! (totalAssets should be == $1 USDC now)
 
-# 5) Approve + Deposit some USDC into the HyperVault
-approve-usdc-to-hypervault:
-	cast send $(USDC_HYPEREVM) "approve(address,uint256)(bool)" $(HYPERVAULT) 1e18 --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
+# 5) Approve + Deposit some USDT into the HyperVault
+approve-usdt-to-hypervault:
+	cast send $(USDT_MAINNET) "approve(address,uint256)(bool)" $(HYPERVAULT) 1e18 --account deployer --rpc-url $(HYPEREVM_MAINNET_RPC)
 
-deposit-usdc-to-hypervault:
-	cast send $(HYPERVAULT) "deposit(uint256,address)(bool)" 1e8 $(DEPLOYER_PUBLIC_ADDRESS) --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
+deposit-usdt-to-hypervault:
+	cast send $(HYPERVAULT) "deposit(uint256,address)(bool)" 1e6 $(DEPLOYER_PUBLIC_ADDRESS) --account deployer --rpc-url $(HYPEREVM_MAINNET_RPC)
 
+# 6) Withdraw from Hypervault on HyperCore
+withdraw-usdt-from-hypervault-on-core:
+	cast send $(HYPERVAULT) "withdraw(uint256,address,address)(uint256)" 1e4 $(DEPLOYER_PUBLIC_ADDRESS) $(DEPLOYER_PUBLIC_ADDRESS) --account deployer --rpc-url $(HYPEREVM_MAINNET_RPC)
+
+
+# Set Token Info - TESTNET
+set-token-info: # PURR token
+	cast send $(TOKEN_REGISTRY_TESTNET) "setTokenInfo(uint32)" 0  --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
 
 # Get Token Index - TESTNET
 get-token-index-via-hypervault:
@@ -54,7 +62,10 @@ get-purr-index:
 
 # Get Token Index - MAINNET - WORKING FINE
 get-token-index-mainnet:
-	cast call $(TOKEN_REGISTRY_MAINNET) "getTokenIndex(address)(uint32)" 0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb --rpc-url $(HYPEREVM_MAINNET_RPC)
+	cast call $(TOKEN_REGISTRY_MAINNET) "getTokenIndex(address)(uint32)" $(USDT_MAINNET) --rpc-url $(HYPEREVM_MAINNET_RPC)
+
+get-hypervault-usdt-balance:
+	cast call $(USDT_MAINNET) "balanceOf(address)(uint256)" $(HYPERVAULT) --rpc-url $(HYPEREVM_MAINNET_RPC)
 
 # Deploy Token Registry to HyperEVM Testnet
 deploy-token-registry-contract:
