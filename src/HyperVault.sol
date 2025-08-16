@@ -37,14 +37,14 @@ contract HyperVault is ERC4626 {
         // bridge USDT to HyperCore Spot
         CoreWriterLib.bridgeToCore(address(asset), assets);
 
-        // get USDT tokenId from address
-        uint64 tokenId = PrecompileLib.getTokenIndex(address(asset));
+        // // get USDT tokenId from address
+        // uint64 tokenId = PrecompileLib.getTokenIndex(address(asset));
 
-        // calculate coreAmount from evmAmount
-        uint64 coreAmount = HLConversions.convertEvmToCoreAmount(tokenId, assets);
+        // // calculate coreAmount from evmAmount
+        // uint64 coreAmount = HLConversions.convertEvmToCoreAmount(tokenId, assets);
 
-        // transfer to HLP vault
-        CoreWriterLib.vaultTransfer(vault, true, coreAmount);
+        // // transfer to HLP vault
+        // CoreWriterLib.vaultTransfer(vault, true, coreAmount);
 
         // CoreWriterLib.spotSend(msg.sender, tokenId, coreAmount); // transfer to the user on Core Spot
 
