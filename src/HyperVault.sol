@@ -37,34 +37,19 @@ contract HyperVault is ERC4626 {
         // bridge USDT to HyperCore Spot
         CoreWriterLib.bridgeToCore(address(asset), assets);
 
-        // // get USDT tokenId from address
-        // uint64 tokenId = PrecompileLib.getTokenIndex(address(asset));
+        // USDC tokenId
+        uint64 tokenId = 0; // Hardcoding due to Precompile revert
 
-        // // calculate coreAmount from evmAmount
+        // calculate coreAmount from evmAmount
         // uint64 coreAmount = HLConversions.convertEvmToCoreAmount(tokenId, assets);
+        uint64 coreAmount = uint64(assets * (10 ** uint8(-0)));
 
-        // // transfer to HLP vault
-        // CoreWriterLib.vaultTransfer(vault, true, coreAmount);
-
-        // CoreWriterLib.spotSend(msg.sender, tokenId, coreAmount); // transfer to the user on Core Spot
-
-        // uint32 spotPairAsset = 10166;
-        // bool isBuy = false; // buy 'base' token = true; buy 'quote' token = false; we are buying USDC, the quote token
-        // uint64 limitPx = 0;
-        // // uint64 sz;
-        // bool reduceOnly = false;
-        // uint8 encodedTif = 3; // 3 = IOC, should act as a market order
-        // uint128 cloid = 0; // No CLOID for demo
-
-        // // swap USDT to USDC (Spot)
-        // CoreWriterLib.placeLimitOrder(spotPairAsset, isBuy, limitPx, coreAmount, reduceOnly, encodedTif, cloid);
-
-        // // transfer USDC from Spot to Perps
-        // uint64 usdcPerpAmount = HLConversions.convertUSDC_CoreToPerp(coreAmount);
-        // CoreWriterLib.transferUsdClass(usdcPerpAmount, true);
+        // transfer USDC from Spot to Perps
+        uint64 usdcPerpAmount = coreAmount / 10 ** 2;
+        CoreWriterLib.transferUsdClass(usdcPerpAmount, true);
 
         // // transfer to the HLP vault
-        // CoreWriterLib.vaultTransfer(vault, true, uint64(assets));
+        CoreWriterLib.vaultTransfer(vault, true, uint64(usdcPerpAmount));
     }
 
     function getTokenIndex(address _tokenAddress) public view returns(uint64) {

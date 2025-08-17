@@ -51,7 +51,7 @@ approve-usdc-to-hypervault:
 
 # 6) Deposit USDC into HyperVault (*showtime* - this will bridge to HyperCore + deposit into HLP vault)
 deposit-usdc-to-hypervault:
-	cast send $(HYPERVAULT) "deposit(uint256,address)(bool)" 1e8 $(DEPLOYER_PUBLIC_ADDRESS) --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
+	cast send $(HYPERVAULT) "deposit(uint256,address)(bool)" 6e8 $(DEPLOYER_PUBLIC_ADDRESS) --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
 
 # 7) Withdraw from Hypervault on HyperCore
 withdraw-usdt-from-hypervault-on-core:
@@ -80,7 +80,17 @@ get-all-balances:
 	echo ""; \
 	echo "Fetching User/Deployer balances from HyperLiquid Core..."; \
 	user_core=$$(curl -s -X POST https://api.hyperliquid-testnet.xyz/info -H "Content-Type: application/json" -d '{"type": "spotClearinghouseState","user": "$(DEPLOYER_PUBLIC_ADDRESS)"}'); \
-	echo "$$user_core" | jq -r '.balances[] | "\(.coin): \(.total)"'
+	echo "$$user_core" | jq -r '.balances[] | "\(.coin): \(.total)"'; \
+	\
+	echo ""; \
+	echo "Fetching HyperVault HLP Vault Equity..."; \
+	hlp_equity=$$(curl -s -X POST https://api.hyperliquid-testnet.xyz/info \
+  	-H "Content-Type: application/json" \
+  	-d '{"type": "userVaultEquities","user": "$(HYPERVAULT)"}' \
+  	| jq -r '.[] | select(.vaultAddress=="0xa15099a30bbf2e68942d6f4c43d70d04faeab0a0") | .equity'); \
+	echo "HLP Vault Equity: $$hlp_equity"
+
+
 
 
 
@@ -97,10 +107,14 @@ get-hypervault-usdt-balance:
 
 # cURL to get HyperVault balance on Core
 curl-get-hypervault-balance-on-core:
-	curl -X POST https://api.hyperliquid.xyz/info -H "Content-Type: application/json" -d '{"type": "spotClearinghouseState","user": "$(HYPERVAULT)"}'
+	curl -X POST https://api.hyperliquid-testnet.xyz/info -H "Content-Type: application/json" -d '{"type": "spotClearinghouseState","user": "$(HYPERVAULT)"}'
 
 curl-get-user-balance-on-core:
-	curl -X POST https://api.hyperliquid.xyz/info -H "Content-Type: application/json" -d '{"type": "spotClearinghouseState","user": "$(DEPLOYER_PUBLIC_ADDRESS)"}'
+	curl -X POST https://api.hyperliquid-testnet.xyz/info -H "Content-Type: application/json" -d '{"type": "spotClearinghouseState","user": "$(DEPLOYER_PUBLIC_ADDRESS)"}'
+
+curl-get-user-hlp-vault-equity:
+	curl -X POST https://api.hyperliquid-testnet.xyz/info -H "Content-Type: application/json" -d '{"type": "userVaultEquities","user": "$(HYPERVAULT)"}'
+
 
 # TESTNET TOKEN REGISTRY COMMANDS...
 set-token-testnet:
