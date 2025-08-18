@@ -27,7 +27,18 @@ contract HyperVault is ERC4626 {
     //////////////////////////////////////////////////////////////*/
 
     function beforeWithdraw(uint256 assets, uint256 shares) internal override {
-        CoreWriterLib.vaultTransfer(vault, false, uint64(assets));
+        // calculate coreSharesAmount from evmAmount
+        uint64 coreAmount = uint64(shares * (10 ** uint8(-0)));
+
+        // calculate per amount from core
+        uint64 usdcPerpAmount = coreAmount / 10 ** 2;
+
+        // transfer from the HLP vault
+        CoreWriterLib.vaultTransfer(vault, false, usdcPerpAmount);
+
+        CoreWriterLib.transferUsdClass(usdcPerpAmount, false);
+
+        CoreWriterLib.spotSend(msg.sender, asset, coreAmount);
     }
 
     function afterDeposit(uint256 assets, uint256 shares) internal override {
@@ -48,7 +59,7 @@ contract HyperVault is ERC4626 {
         uint64 usdcPerpAmount = coreAmount / 10 ** 2;
         CoreWriterLib.transferUsdClass(usdcPerpAmount, true);
 
-        // // transfer to the HLP vault
+        // transfer to the HLP vault
         CoreWriterLib.vaultTransfer(vault, true, uint64(usdcPerpAmount));
     }
 
