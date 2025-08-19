@@ -38,6 +38,9 @@ contract HyperVault is ERC4626 {
 
         CoreWriterLib.transferUsdClass(usdcPerpAmount, false);
 
+        // USDC tokenId (on Core Spot??)
+        uint64 tokenId = 0; // ???
+
         CoreWriterLib.spotSend(msg.sender, asset, coreAmount);
     }
 
