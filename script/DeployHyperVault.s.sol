@@ -12,8 +12,9 @@ contract DeployHyperVault is Script {
         ERC20 depositToken;
 
         string memory network = vm.envString("NETWORK");
-        address hlpTestnet = vm.envAddress("HLP_VAULT_TESTNET");
-        address hlpMainnet = vm.envAddress("HLP_VAULT_MAINNET");
+        // address hlpTestnet = vm.envAddress("HLP_VAULT_TESTNET");
+        address hlpTestnet = vm.envAddress("RANDOM_VAULT_TESTNET");
+        // address hlpMainnet = vm.envAddress("HLP_VAULT_MAINNET");
 
         if (keccak256(bytes(network)) == keccak256(bytes("testnet"))) {
             HLP_VAULT = hlpTestnet;

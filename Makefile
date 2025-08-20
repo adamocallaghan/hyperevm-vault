@@ -51,7 +51,7 @@ approve-usdc-to-hypervault:
 
 # 6) Deposit USDC into HyperVault (*showtime* - this will bridge to HyperCore + deposit into HLP vault)
 deposit-usdc-to-hypervault:
-	cast send $(HYPERVAULT) "deposit(uint256,address)(bool)" 7e8 $(DEPLOYER_PUBLIC_ADDRESS) --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
+	cast send $(HYPERVAULT) "deposit(uint256,address)(bool)" 6e8 $(DEPLOYER_PUBLIC_ADDRESS) --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
 
 # 7) Withdraw from Hypervault on HyperCore
 withdraw-usdt-from-hypervault-on-core:
@@ -88,7 +88,15 @@ get-all-balances:
   	-H "Content-Type: application/json" \
   	-d '{"type": "userVaultEquities","user": "$(HYPERVAULT)"}' \
   	| jq -r '.[] | select(.vaultAddress=="0xa15099a30bbf2e68942d6f4c43d70d04faeab0a0") | .equity'); \
-	echo "HLP Vault Equity: $$hlp_equity"
+	echo "HLP Vault Equity: $$hlp_equity"; \
+	\
+	echo ""; \
+	echo "Fetching Random Vault Equity..."; \
+	random_vault_equity=$$(curl -s -X POST https://api.hyperliquid-testnet.xyz/info \
+  	-H "Content-Type: application/json" \
+  	-d '{"type": "userVaultEquities","user": "$(HYPERVAULT)"}' \
+  	| jq -r '.[] | select(.vaultAddress=="0x3ea541c902e9da1679b1f0422d30594a81fbc398") | .equity'); \
+	echo "Random Vault Equity: $$random_vault_equity"
 
 
 
