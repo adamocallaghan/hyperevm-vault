@@ -70,6 +70,34 @@ contract HyperVault is ERC4626 {
         return PrecompileLib.getSpotIndex(_tokenAddress);
     }
 
+    function withdraw(
+        uint256 assets,
+        address receiver,
+        address owner
+    ) public override returns (uint256 shares) {
+        shares = previewWithdraw(assets); // No need to check for rounding error, previewWithdraw rounds up.
+
+        if (msg.sender != owner) {
+            uint256 allowed = allowance[owner][msg.sender]; // Saves gas for limited approvals.
+
+            if (allowed != type(uint256).max) allowance[owner][msg.sender] = allowed - shares;
+        }
+
+        beforeWithdraw(assets, shares);
+
+        _burn(owner, shares);
+
+        emit Withdraw(msg.sender, receiver, owner, assets, shares);
+
+        // note: will override this function to make this clear, but
+        // the assets are not transferred back to HyperEVM, we do our
+        // ERC4626 cals above, and then use spotSend on Core to give
+        // them back to the user - hence why the transfer below is
+        // commented out
+        //
+        // asset.safeTransfer(receiver, assets);
+    }
+
     /*//////////////////////////////////////////////////////////////
                         Vault Information
     //////////////////////////////////////////////////////////////*/
