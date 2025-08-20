@@ -12,9 +12,11 @@ contract DeployHyperVault is Script {
         ERC20 depositToken;
 
         string memory network = vm.envString("NETWORK");
+        address hlpTestnet = vm.envAddress("HLP_VAULT_TESTNET");
+        address hlpMainnet = vm.envAddress("HLP_VAULT_MAINNET");
 
         if (keccak256(bytes(network)) == keccak256(bytes("testnet"))) {
-            HLP_VAULT = 0xa15099a30BBf2e68942d6F4c43d70D04FAEab0A0;
+            HLP_VAULT = hlpTestnet;
             depositToken = ERC20(0xd9CBEC81df392A88AEff575E962d149d57F4d6bc);
         } else if (keccak256(bytes(network)) == keccak256(bytes("mainnet"))) {
             HLP_VAULT = 0xdfc24b077bc1425AD1DEA75bCB6f8158E10Df303;
@@ -22,6 +24,9 @@ contract DeployHyperVault is Script {
         } else {
             revert("Unknown network");
         }
+
+        console2.log("hlp address: ", hlpTestnet);
+        console2.log("HLP_VAULT:", HLP_VAULT);
         
         vm.createSelectFork(network);
 

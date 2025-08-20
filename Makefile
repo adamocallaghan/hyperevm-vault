@@ -51,11 +51,11 @@ approve-usdc-to-hypervault:
 
 # 6) Deposit USDC into HyperVault (*showtime* - this will bridge to HyperCore + deposit into HLP vault)
 deposit-usdc-to-hypervault:
-	cast send $(HYPERVAULT) "deposit(uint256,address)(bool)" 6e8 $(DEPLOYER_PUBLIC_ADDRESS) --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
+	cast send $(HYPERVAULT) "deposit(uint256,address)(bool)" 7e8 $(DEPLOYER_PUBLIC_ADDRESS) --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
 
 # 7) Withdraw from Hypervault on HyperCore
 withdraw-usdt-from-hypervault-on-core:
-	cast send $(HYPERVAULT) "withdraw(uint256,address,address)(uint256)" 1e8 $(DEPLOYER_PUBLIC_ADDRESS) $(DEPLOYER_PUBLIC_ADDRESS) --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
+	cast send $(HYPERVAULT) "withdraw(uint256,address,address)(uint256)" 6e8 $(DEPLOYER_PUBLIC_ADDRESS) $(DEPLOYER_PUBLIC_ADDRESS) --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
 
 # GET ALL BALANCES:
 #
@@ -69,7 +69,7 @@ get-all-balances:
 	my_usdc=$$(cast call $(USDC_TESTNET) "balanceOf(address)(uint256)" $(DEPLOYER_PUBLIC_ADDRESS) --rpc-url $(HYPEREVM_TESTNET_RPC)); \
 	hypervault_usdc=$$(cast call $(USDC_TESTNET) "balanceOf(address)(uint256)" $(HYPERVAULT) --rpc-url $(HYPEREVM_TESTNET_RPC)); \
 	echo "HyperVault - Total Deposited Assets: $$total_assets"; \
-	echo "HyperVault - USDC Balance: $$hypervault_usdc"; \
+ 	echo "HyperVault - USDC Balance: $$hypervault_usdc"; \
 	echo "User/Deployer Wallet - USDC Balance: $$my_usdc"; \
 	\
 	echo ""; \
@@ -98,12 +98,24 @@ get-all-balances:
 get-hypervault-deposit-asset:
 	cast call $(HYPERVAULT) "asset()(address)" --rpc-url $(HYPEREVM_TESTNET_RPC)
 
+# Get the HLP vault equity + unlock time for the HyperVault contract address
+# *** RUN THIS COMMAND DIRECTLY IN SHELL ***
+# cast call 0x0000000000000000000000000000000000000802 --rpc-url $HYPEREVM_TESTNET_RPC --data $(cast abi-encode "f(address,address)" $HYPERVAULT $HLP_VAULT_TESTNET) | xargs -I{} cast abi-decode "f()(uint64,uint64)" {}
+
 # Get Token Index
 get-token-index-mainnet:
 	cast call $(TOKEN_REGISTRY_MAINNET) "getTokenIndex(address)(uint32)" $(USDT_MAINNET) --rpc-url $(HYPEREVM_MAINNET_RPC)
 
-get-hypervault-usdt-balance:
-	cast call $(USDT_MAINNET) "balanceOf(address)(uint256)" $(HYPERVAULT) --rpc-url $(HYPEREVM_MAINNET_RPC)
+# shares, totalSupply and totalAssetsEvmCount commands
+
+get-my-hypervault-shares-balance:
+	cast call $(HYPERVAULT) "balanceOf(address)(uint256)" $(DEPLOYER_PUBLIC_ADDRESS) --rpc-url $(HYPEREVM_TESTNET_RPC)
+
+get-hypervault-shares-total-supply:
+	cast call $(HYPERVAULT) "totalSupply()(uint256)" --rpc-url $(HYPEREVM_TESTNET_RPC)
+
+get-hypervault-total-asset-evm-count:
+	cast call $(HYPERVAULT) "totalAssetsEvmCount()(uint256)" --rpc-url $(HYPEREVM_TESTNET_RPC)
 
 # cURL to get HyperVault balance on Core
 curl-get-hypervault-balance-on-core:
@@ -114,7 +126,6 @@ curl-get-user-balance-on-core:
 
 curl-get-user-hlp-vault-equity:
 	curl -X POST https://api.hyperliquid-testnet.xyz/info -H "Content-Type: application/json" -d '{"type": "userVaultEquities","user": "$(HYPERVAULT)"}'
-
 
 # TESTNET TOKEN REGISTRY COMMANDS...
 set-token-testnet:
