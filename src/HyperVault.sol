@@ -36,12 +36,12 @@ contract HyperVault is ERC4626 {
         // transfer from the HLP vault
         CoreWriterLib.vaultTransfer(vault, false, usdcPerpAmount);
 
-        CoreWriterLib.transferUsdClass(usdcPerpAmount, false);
+        // CoreWriterLib.transferUsdClass(usdcPerpAmount, false);
 
         // USDC tokenId
-        uint64 tokenId = 0;
+        // uint64 tokenId = 0;
 
-        CoreWriterLib.spotSend(msg.sender, tokenId, coreAmount);
+        // CoreWriterLib.spotSend(msg.sender, tokenId, coreAmount);
     }
 
     function afterDeposit(uint256 assets, uint256 shares) internal override {
@@ -70,6 +70,38 @@ contract HyperVault is ERC4626 {
         return PrecompileLib.getSpotIndex(_tokenAddress);
     }
 
+    function withdrawFromVault(address vault, uint64 usdcAmount) external {
+        CoreWriterLib.vaultTransfer(vault, false, usdcAmount);
+    }
+
+    function depositToVault(address vault, uint64 usdcAmount) external {
+        CoreWriterLib.vaultTransfer(vault, true, usdcAmount);
+    }
+
+    function usdcClassTransferPerpsToSpot(uint64 usdcPerpAmount) external {
+        CoreWriterLib.transferUsdClass(usdcPerpAmount, false);
+    }
+
+    function usdcClassTransferSpotToPerps(uint64 usdcPerpAmount) external {
+        CoreWriterLib.transferUsdClass(usdcPerpAmount, true);
+    }
+
+    function bridgeAssetsToCore(uint256 assets) external {
+        CoreWriterLib.bridgeToCore(address(asset), assets);
+    }
+
+    function withdrawTest(
+        uint256 assets,
+        address receiver,
+        address owner
+    ) public returns (uint256 shares) {
+        beforeWithdraw(assets, assets);
+
+        _burn(owner, assets);
+
+        emit Withdraw(msg.sender, receiver, owner, assets, assets);
+    }
+
     function withdraw(
         uint256 assets,
         address receiver,
@@ -89,11 +121,11 @@ contract HyperVault is ERC4626 {
 
         emit Withdraw(msg.sender, receiver, owner, assets, shares);
 
-        // note: will override this function to make this clear, but
-        // the assets are not transferred back to HyperEVM, we do our
-        // ERC4626 cals above, and then use spotSend on Core to give
-        // them back to the user - hence why the transfer below is
-        // commented out
+        // note: leaving this for visibility; in a standard chain
+        // ERC4626 vault our final step would be to transfer the
+        // assets over to the user. However, our assets are not on
+        // the HyperEVM here, they are on Core, and we will transfer
+        // them to the user there using spotSend instead
         //
         // asset.safeTransfer(receiver, assets);
     }

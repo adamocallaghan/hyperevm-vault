@@ -41,7 +41,7 @@ get-my-usdc-balance:
 
 # 4) Transfer 1e8 (i.e. $! USDC) to your HyperVault *directly* (does not hit "deposit", this is going into the abyss)
 transfer-to-contract:
-	cast send $(USDC_TESTNET) "transfer(address,uint256)" $(HYPERVAULT) 1e8 --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
+	cast send $(USDC_TESTNET) "transfer(address,uint256)" $(HYPERVAULT) 7e8 --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
 
 # Now Check the HyperVault totalAssets balance above again! (totalAssets should be == $1 USDC, or 1e8 USDC, now)
 
@@ -54,8 +54,23 @@ deposit-usdc-to-hypervault:
 	cast send $(HYPERVAULT) "deposit(uint256,address)(bool)" 6e8 $(DEPLOYER_PUBLIC_ADDRESS) --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
 
 # 7) Withdraw from Hypervault on HyperCore
-withdraw-usdt-from-hypervault-on-core:
-	cast send $(HYPERVAULT) "withdraw(uint256,address,address)(uint256)" 6e8 $(DEPLOYER_PUBLIC_ADDRESS) $(DEPLOYER_PUBLIC_ADDRESS) --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
+withdraw-usdc-from-hypervault-on-core:
+	cast send $(HYPERVAULT) "withdraw(uint256,address,address)(uint256)" 5e8 $(DEPLOYER_PUBLIC_ADDRESS) $(DEPLOYER_PUBLIC_ADDRESS) --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
+
+# DIRECT COMMANDS!
+
+bridge-assets-direct: # WORKS! --> but transfer some USDC to Hypervault EVM contract first
+	cast send $(HYPERVAULT) "bridgeAssetsToCore(uint256)" 6e8 --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
+
+usdc-class-transfer-spot-to-perps: # WORKS!
+	cast send $(HYPERVAULT) "usdcClassTransferSpotToPerps(uint64)" 6e6 --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
+
+deposit-direct: # WORKS!
+	cast send $(HYPERVAULT) "depositToVault(address,uint64)" $(RANDOM_VAULT_TESTNET) 6e6 --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
+
+withdraw-direct: # WORKS! --> the issue was the isDeposit check in CoreWriter lib, the Precompiles aren't returning a correct value for some reason?
+	cast send $(HYPERVAULT) "withdrawFromVault(address,uint64)" $(RANDOM_VAULT_TESTNET) 6e6 --account deployer --rpc-url $(HYPEREVM_TESTNET_RPC)
+
 
 # GET ALL BALANCES:
 #
